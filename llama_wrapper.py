@@ -130,7 +130,7 @@ class LlamaWrapper:
         )
         if override_model_weights_path is not None:
             self.model.load_state_dict(t.load(override_model_weights_path))
-        if size != "7b":
+        if self.device == "cuda":
             self.model = self.model.half()
         self.model = self.model.to(self.device)
         if use_chat:
