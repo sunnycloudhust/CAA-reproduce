@@ -85,6 +85,7 @@ def process_item_tqa_mmlu(
     correct = item["correct"]
     incorrect = item["incorrect"]
     category = item["category"]
+    
     model_output = model.get_logits_from_text(
         user_input=prompt, model_output="(", system_prompt=system_prompt
     )
@@ -144,6 +145,7 @@ def test_steering(
             vector = get_steering_vector(settings.behavior, layer, name_path, normalized=True)
         if settings.model_size != "7b":
             vector = vector.half()
+        
         vector = vector.to(model.device)
         for multiplier in multipliers:
             result_save_suffix = settings.make_result_save_suffix(
