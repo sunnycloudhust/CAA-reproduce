@@ -46,10 +46,12 @@ FINETUNE_PATH = os.path.join(BASE_DIR, "finetuned_models")
 
 
 def get_vector_dir(behavior: str, normalized=False) -> str:
+    # return folder containing steering vector for a specific behavior
     return os.path.join(NORMALIZED_VECTORS_PATH if normalized else VECTORS_PATH, behavior)
 
 
 def get_vector_path(behavior: str, layer, model_name_path: str, normalized=False) -> str:
+    # return a specific steering vector in a specifc layer, model
     return os.path.join(
         get_vector_dir(behavior, normalized=normalized),
         f"vec_layer_{make_tensor_save_suffix(layer, model_name_path)}.pt",
@@ -57,17 +59,18 @@ def get_vector_path(behavior: str, layer, model_name_path: str, normalized=False
 
 
 def get_raw_data_path(behavior: str) -> str:
+    # example: datasets/raw/hallucination/dataset.json
     return os.path.join(RAW_DATA_PATH, behavior, "dataset.json")
 
 
 def get_ab_data_path(behavior: str, test: bool = False) -> str:
+    # get generate/test dataset for AB
     if test:
         path = os.path.join(TEST_DATA_PATH, behavior, "test_dataset_ab.json")
     else:
         path = os.path.join(GENERATE_DATA_PATH, behavior, "generate_dataset.json")
     return path
-
-
+    
 def get_open_ended_data_path(behavior: str) -> str:
     return os.path.join(TEST_DATA_PATH, behavior, "test_dataset_open_ended.json")
 

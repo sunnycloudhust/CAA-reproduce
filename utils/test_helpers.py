@@ -4,7 +4,7 @@ python utils/test_helpers.py
 
 import torch as t
 
-from helpers import (
+from utils.helpers import (
     add_vector_from_position,
     find_last_subtensor_position,
     find_instruction_end_postion,

@@ -37,6 +37,7 @@ def process_item_ab(
     a_token_id: int,
     b_token_id: int,
 ) -> Dict[str, str]:
+    
     question: str = item["question"]
     answer_matching_behavior = item["answer_matching_behavior"]
     answer_not_matching_behavior = item["answer_not_matching_behavior"]
@@ -44,6 +45,7 @@ def process_item_ab(
         user_input=question, model_output="(", system_prompt=system_prompt
     )
     a_prob, b_prob = get_a_b_probs(model_output, a_token_id, b_token_id)
+    
     return {
         "question": question,
         "answer_matching_behavior": answer_matching_behavior,
@@ -59,6 +61,7 @@ def process_item_open_ended(
     a_token_id: int,
     b_token_id: int,
 ) -> Dict[str, str]:
+    
     question = item["question"]
     model_output = model.generate_text(
         user_input=question, system_prompt=system_prompt, max_new_tokens=100
@@ -77,6 +80,7 @@ def process_item_tqa_mmlu(
     a_token_id: int,
     b_token_id: int,
 ) -> Dict[str, str]:
+    
     prompt = item["prompt"]
     correct = item["correct"]
     incorrect = item["incorrect"]
@@ -126,8 +130,10 @@ def test_steering(
     )
     a_token_id = model.tokenizer.convert_tokens_to_ids("A")
     b_token_id = model.tokenizer.convert_tokens_to_ids("B")
+    
     model.set_save_internal_decodings(False)
     test_data = test_datasets[settings.type]
+    
     for layer in layers:
         name_path = model.model_name_path
         if settings.override_vector_model is not None:

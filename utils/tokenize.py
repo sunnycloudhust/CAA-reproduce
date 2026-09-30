@@ -1,3 +1,4 @@
+# Tokenize prompt + response in Llama-base and Llama-chat
 from typing import List
 from transformers import PreTrainedTokenizer
 

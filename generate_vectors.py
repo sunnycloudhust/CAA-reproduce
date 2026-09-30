@@ -34,9 +34,7 @@ class ComparisonDataset(Dataset):
     def __init__(self, data_path, token, model_name_path, use_chat):
         with open(data_path, "r") as f:
             self.data = json.load(f)
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name_path, token=token
-        )
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name_path, token=token)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.use_chat = use_chat
 
@@ -67,12 +65,14 @@ class ComparisonDataset(Dataset):
         n_tokens = self.prompt_to_tokens(q_text, n_text)
         return p_tokens, n_tokens
 
+
 def generate_save_vectors_for_behavior(
     layers: List[int],
     save_activations: bool,
     behavior: List[str],
     model: LlamaWrapper,
 ):
+    # Create and save the steering vector for each layer
     data_path = get_ab_data_path(behavior)
     if not os.path.exists(get_vector_dir(behavior)):
         os.makedirs(get_vector_dir(behavior))
@@ -86,10 +86,10 @@ def generate_save_vectors_for_behavior(
     neg_activations = dict([(layer, []) for layer in layers])
 
     dataset = ComparisonDataset(
-        data_path,
-        HUGGINGFACE_TOKEN,
-        model.model_name_path,
-        model.use_chat,
+        data_path=data_path,
+        token=HUGGINGFACE_TOKEN,
+        model_name_path=model.model_name_path,
+        use_chat=model.use_chat,
     )
 
     for p_tokens, n_tokens in tqdm(dataset, desc="Processing prompts"):
@@ -97,16 +97,19 @@ def generate_save_vectors_for_behavior(
         n_tokens = n_tokens.to(model.device)
         model.reset_all()
         model.get_logits(p_tokens)
+        # Positive response
         for layer in layers:
             p_activations = model.get_last_activations(layer)
-            p_activations = p_activations[0, -2, :].detach().cpu()
+            p_activations = p_activations[0, -2, :].detach().cpu() # lấy token áp chót
             pos_activations[layer].append(p_activations)
+        # Negative response
         model.reset_all()
         model.get_logits(n_tokens)
         for layer in layers:
             n_activations = model.get_last_activations(layer)
             n_activations = n_activations[0, -2, :].detach().cpu()
             neg_activations[layer].append(n_activations)
+
 
     for layer in layers:
         all_pos_layer = t.stack(pos_activations[layer])
@@ -143,6 +146,7 @@ def generate_save_vectors(
     model = LlamaWrapper(
         HUGGINGFACE_TOKEN, size=model_size, use_chat=not use_base_model
     )
+    
     for behavior in behaviors:
         generate_save_vectors_for_behavior(
             layers, save_activations, behavior, model
@@ -158,6 +162,7 @@ if __name__ == "__main__":
     parser.add_argument("--behaviors", nargs="+", type=str, default=ALL_BEHAVIORS)
 
     args = parser.parse_args()
+    
     generate_save_vectors(
         args.layers,
         args.save_activations,

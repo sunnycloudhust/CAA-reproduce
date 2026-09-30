@@ -35,6 +35,7 @@ def add_vector_from_position(matrix, vector, position_ids, from_pos=None):
 
 
 def find_last_subtensor_position(tensor, sub_tensor):
+    # Tìm vị trí cuối cùng của subtensor trong tensor
     n, m = tensor.size(0), sub_tensor.size(0)
     if m > n:
         return -1
@@ -45,6 +46,7 @@ def find_last_subtensor_position(tensor, sub_tensor):
 
 
 def find_instruction_end_postion(tokens, end_str):
+    # tìm vị trí cuối cùng của end_str
     start_pos = find_last_subtensor_position(tokens, end_str)
     if start_pos == -1:
         return -1
@@ -52,6 +54,7 @@ def find_instruction_end_postion(tokens, end_str):
 
 
 def get_a_b_probs(logits, a_token_id, b_token_id):
+    # Get the prob. of specific token A and B 
     last_token_logits = logits[0, -1, :]
     last_token_probs = t.softmax(last_token_logits, dim=-1)
     a_prob = last_token_probs[a_token_id].item()
@@ -60,6 +63,8 @@ def get_a_b_probs(logits, a_token_id, b_token_id):
 
 
 def make_tensor_save_suffix(layer, model_name_path):
+    # tạo tên suffix để lưu steering vector
+    # Example: "13_Llama-2-7b-chat-hf"
     return f'{layer}_{model_name_path.split("/")[-1]}'
 
 
@@ -70,6 +75,7 @@ def get_model_path(size: str, is_base: bool):
         return f"meta-llama/Llama-2-{size}-chat-hf"
 
 def model_name_format(name: str) -> str:
+    # Better readability 
     name = name.lower()
     is_chat = "chat" in name
     is_7b = "7b" in name

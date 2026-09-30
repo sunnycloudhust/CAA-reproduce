@@ -60,6 +60,7 @@ class BlockOutputWrapper(t.nn.Module):
     def forward(self, *args, **kwargs):
         output = self.block(*args, **kwargs)
         self.activations = output[0]
+        
         if self.calc_dot_product_with is not None:
             last_token_activations = self.activations[0, -1, :]
             decoded_activations = self.unembed_matrix(self.norm(last_token_activations))
@@ -117,7 +118,7 @@ class LlamaWrapper:
         size: str = "7b",
         use_chat: bool = True,
         override_model_weights_path: Optional[str] = None,
-    ):
+    ):  
         self.device = "cuda" if t.cuda.is_available() else "cpu"
         self.use_chat = use_chat
         self.model_name_path = get_model_path(size, not use_chat)
