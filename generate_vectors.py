@@ -31,6 +31,7 @@ HUGGINGFACE_TOKEN = os.getenv("HF_TOKEN")
 
 
 class ComparisonDataset(Dataset):
+    # class return tokenized pairs 
     def __init__(self, data_path, token, model_name_path, use_chat):
         with open(data_path, "r") as f:
             self.data = json.load(f)
@@ -73,10 +74,11 @@ def generate_save_vectors_for_behavior(
     model: LlamaWrapper,
 ):
     # Create and save the steering vector for each layer
-    data_path = get_ab_data_path(behavior)
-    if not os.path.exists(get_vector_dir(behavior)):
+    data_path = get_ab_data_path(behavior) # training set AB for a behavior
+    
+    if not os.path.exists(get_vector_dir(behavior)): #vectors/behavior
         os.makedirs(get_vector_dir(behavior))
-    if save_activations and not os.path.exists(get_activations_dir(behavior)):
+    if save_activations and not os.path.exists(get_activations_dir(behavior)): #activations/behavior
         os.makedirs(get_activations_dir(behavior))
 
     model.set_save_internal_decodings(False)
@@ -97,6 +99,7 @@ def generate_save_vectors_for_behavior(
         n_tokens = n_tokens.to(model.device)
         model.reset_all()
         model.get_logits(p_tokens)
+        
         # Positive response
         for layer in layers:
             p_activations = model.get_last_activations(layer)
@@ -104,8 +107,10 @@ def generate_save_vectors_for_behavior(
                 p_activations = p_activations[0, -2, :]
             else:
                 p_activations = p_activations[-2, :]
-            p_activations = p_activations.detach().cpu() # lấy token áp chót
+            
+            p_activations = p_activations.detach().cpu() # lấy token áp chót A/B
             pos_activations[layer].append(p_activations)
+        
         # Negative response
         model.reset_all()
         model.get_logits(n_tokens)
@@ -123,10 +128,10 @@ def generate_save_vectors_for_behavior(
         all_pos_layer = t.stack(pos_activations[layer])
         all_neg_layer = t.stack(neg_activations[layer])
         vec = (all_pos_layer - all_neg_layer).mean(dim=0)
-        t.save(
-            vec,
+        t.save(vec,
             get_vector_path(behavior, layer, model.model_name_path),
         )
+        
         if save_activations:
             t.save(
                 all_pos_layer,
@@ -156,9 +161,7 @@ def generate_save_vectors(
     )
     
     for behavior in behaviors:
-        generate_save_vectors_for_behavior(
-            layers, save_activations, behavior, model
-        )
+        generate_save_vectors_for_behavior(layers, save_activations, behavior, model)
 
 
 if __name__ == "__main__":
