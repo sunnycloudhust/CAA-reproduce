@@ -3,12 +3,12 @@ from utils.helpers import get_model_path
 import torch as t
 import os
 
-def normalize_vectors(model_size: str, is_base: bool, n_layers: int):
+def normalize_vectors(model_size: str, is_base: bool, layers):
     # make normalized_vectors directory
     normalized_vectors_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "normalized_vectors")
     if not os.path.exists(normalized_vectors_dir):
         os.makedirs(normalized_vectors_dir)
-    for layer in range(n_layers):
+    for layer in layers:
         print(layer)
         norms = {}
         vecs = {}
@@ -34,5 +34,6 @@ def normalize_vectors(model_size: str, is_base: bool, n_layers: int):
     
     
 if __name__ == "__main__":
-    normalize_vectors("7b", True, 32)
-    normalize_vectors("7b", False, 32)
+    layers = [0, 13, 18, 25]
+    normalize_vectors("7b", True, layers)
+    normalize_vectors("7b", False, layers)

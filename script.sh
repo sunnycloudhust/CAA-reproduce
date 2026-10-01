@@ -8,8 +8,8 @@ cd "$SCRIPT_DIR"
 # Full form for generate_vectors.py:
 #   python generate_vectors.py --layers <layers> --save_activations --use_base_model 
 #           --model_size <7b> --behaviors <behavior> ...
-python generate_vectors.py --layers 0 13 18 25 --save_activations --model_size "7b" 
-python generate_vectors.py --layers 0 13 18 25 --model_size "7b" --use_base_model 
+# python generate_vectors.py --layers 0 13 18 25 --save_activations --model_size "7b" 
+# python generate_vectors.py --layers 0 13 18 25 --model_size "7b" --use_base_model 
 
 
 python normalize_vectors.py
