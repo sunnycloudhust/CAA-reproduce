@@ -17,7 +17,7 @@ def test_add_vector_from_position():
     position_ids = t.tensor([1, 2, 3])
     result = add_vector_from_position(
         matrix, vector, position_ids, from_pos=2
-    )
+    )   
     expected = t.tensor([[1, 2], [4, 5], [6, 7]], dtype=t.float32)
     assert t.allclose(result, expected)
 

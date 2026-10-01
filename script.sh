@@ -1,3 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 # Full form for generate_vectors.py:
 #   python generate_vectors.py --layers <layers> --save_activations --use_base_model 
 #           --model_size <7b> --behaviors <behavior> ...
