@@ -41,6 +41,7 @@ def process_item_ab(
     question: str = item["question"]
     answer_matching_behavior = item["answer_matching_behavior"]
     answer_not_matching_behavior = item["answer_not_matching_behavior"]
+    
     model_output = model.get_logits_from_text(
         user_input=question, model_output="(", system_prompt=system_prompt
     )

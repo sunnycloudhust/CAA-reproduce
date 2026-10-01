@@ -173,12 +173,12 @@ class LlamaWrapper:
         tokens = t.tensor(tokens).unsqueeze(0).to(self.device)
         return self.generate(tokens, max_new_tokens=max_new_tokens)
 
-    def get_logits(self, tokens):
+    def get_logits(self, tokens): #tokens have shape[batch_size, seq_len]
         with t.no_grad():
             instr_pos = find_instruction_end_postion(tokens[0], self.END_STR)
             self.set_from_positions(instr_pos)
             logits = self.model(tokens).logits
-            return logits
+            return logits  #return all logits 
 
     def get_logits_from_text(self, user_input: str, model_output: Optional[str] = None, system_prompt: Optional[str] = None) -> t.Tensor:
         if self.use_chat:
@@ -187,8 +187,9 @@ class LlamaWrapper:
             )
         else:
             tokens = tokenize_llama_base(tokenizer=self.tokenizer, user_input=user_input, model_output=model_output)
+        
         tokens = t.tensor(tokens).unsqueeze(0).to(self.device)
-        return self.get_logits(tokens)
+        return self.get_logits(tokens)  #return all logits of the text
 
     def get_last_activations(self, layer):
         return self.model.model.layers[layer].activations
