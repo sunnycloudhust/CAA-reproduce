@@ -100,14 +100,22 @@ def generate_save_vectors_for_behavior(
         # Positive response
         for layer in layers:
             p_activations = model.get_last_activations(layer)
-            p_activations = p_activations[0, -2, :].detach().cpu() # lấy token áp chót
+            if p_activations.dim() == 3:
+                p_activations = p_activations[0, -2, :]
+            else:
+                p_activations = p_activations[-2, :]
+            p_activations = p_activations.detach().cpu() # lấy token áp chót
             pos_activations[layer].append(p_activations)
         # Negative response
         model.reset_all()
         model.get_logits(n_tokens)
         for layer in layers:
             n_activations = model.get_last_activations(layer)
-            n_activations = n_activations[0, -2, :].detach().cpu()
+            if n_activations.dim() == 3:
+                n_activations = n_activations[0, -2, :]
+            else:
+                n_activations = n_activations[-2, :]
+            n_activations = n_activations.detach().cpu()
             neg_activations[layer].append(n_activations)
 
 
