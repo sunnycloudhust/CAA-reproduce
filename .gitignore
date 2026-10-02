@@ -1,4 +1,3 @@
-normalized_vectors/
 venv
 __pycache__
 .pytest_cache
