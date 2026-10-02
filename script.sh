@@ -44,6 +44,10 @@ cd "$SCRIPT_DIR"
 
 # python prompting_with_steering.py --layers 13 --multipliers -2 -1 0 1 2 --type truthful_qa --behaviors sycophancy
 
+# Full form for scoring.py:
+#   python scoring.py
+python scoring.py
+
 # Full form for plot_results.py:
 #   python plot_results.py --layers <layers> --multipliers <number> ... --title <text> --behaviors <behavior> ... --type <ab|open_ended|truthful_qa|mmlu> --override_vector <layer> --override_vector_model <model> --use_base_model --model_size <7b> --override_weights <path> <path>
 python plot_results.py --layers 0 13 18 25 --multipliers -1 1 --type ab 
@@ -55,9 +59,5 @@ python plot_results.py --layers 13 --multipliers -1 -0.5 0 0.5 1 --type ab --tit
 python plot_results.py --layers 13 --multipliers -2 -1 0 1 2 --type mmlu
 
 python plot_results.py --layers 13 --multipliers -2 -1 0 1 2 --type truthful_qa --behaviors sycophancy
-
-# Full form for scoring.py:
-#   python scoring.py
-python scoring.py
 
 python plot_results.py --layers 13 --multipliers -1.5 -1 0 1 1.5 --type open_ended --title "Layer 13 - Llama 2 7B Chat"
