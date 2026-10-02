@@ -59,6 +59,14 @@ def make_prompts(question, answer, behavior):
     user_prompt = f"{SCORING_PROMPTS[behavior]}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}\n\nScore:"
     return system_prompt, user_prompt
 
+def has_complete_scores(file_path):
+    with open(file_path, "r") as f:
+        data = json.load(f)
+    return bool(data) and all(
+        isinstance(item.get("score"), (int, float)) and 0 <= item["score"] <= 10
+        for item in data
+    )
+
 def scoring(behaviors=ALL_BEHAVIORS, custom_paths: dict[str, list[str]]=None, overwrite=False, do_printing=False):
     open_ended_scores_dir = os.path.join(RESULTS_PATH, "open_ended_scores")
     if not os.path.exists(open_ended_scores_dir):
@@ -75,23 +83,27 @@ def scoring(behaviors=ALL_BEHAVIORS, custom_paths: dict[str, list[str]]=None, ov
         for file in open_ended_results:
             new_save = os.path.join(copy_dir, os.path.basename(file))
             scores = 0
-            if os.path.exists(new_save) and not overwrite:
+            if os.path.exists(new_save) and not overwrite and has_complete_scores(new_save):
                 print(f"Skipping {file} because it already exists")
                 continue
             with open(file, "r") as f:
                 data = json.load(f)
-            with open(os.path.join(copy_dir, os.path.basename(file)), "w") as f:
-                print(f"Scoring {file}")
-                for d in tqdm(data):
+            print(f"Scoring {file}")
+            for d in tqdm(data):
+                if "score" in d and not overwrite:
+                    continue
+                try:
                     system_prompt, user_prompt = make_prompts(d["question"], d["model_output"], behavior)
                     score = make_llama_request(system_prompt, user_prompt)
-                    try:
-                        numeric_score = parse_score(score)
-                        d["score"] = numeric_score
-                        scores += numeric_score
-                    except Exception:
-                        print(f"Error scoring. Prompt: {user_prompt}, Response: {score}")
-                        continue
+                    numeric_score = parse_score(score)
+                    d["score"] = numeric_score
+                    scores += numeric_score
+                except Exception as error:
+                    print(f"Error scoring item: {error}")
+                    continue
+            with open(new_save, "w") as f:
+                json.dump(data, f, indent=4)
+            with open(file, "w") as f:
                 json.dump(data, f, indent=4)
             scores /= sum("score" in item for item in data) or 1
             if do_printing:
