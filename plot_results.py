@@ -257,7 +257,11 @@ def plot_tqa_mmlu_results_for_layer(
                 positive_steering_res = _format_for_latex_table(positive_steering_res, no_steering_res)
                 negative_steering_res = _format_for_latex_table(negative_steering_res, no_steering_res)
                 no_steering_res = f"\\same{{{no_steering_res:.2f}}}"
-                f_tex.write(f"{_format_category_name(category)} & {positive_steering_res} & {negative_steering_res} & {no_steering_res} \\\ \n")
+                f_tex.write(
+                    f"{_format_category_name(category)} & {positive_steering_res} & {negative_steering_res} & {no_steering_res} "
+                    + r"\\ "
+                    + "\n"
+                )
             except KeyError:
                 pass                
             for multiplier, score in res_list:
@@ -268,7 +272,11 @@ def plot_tqa_mmlu_results_for_layer(
         pos_avg = _format_for_latex_table(pos_avg, no_steering_avg)
         neg_avg = _format_for_latex_table(neg_avg, no_steering_avg)
         no_steering_avg = f"\\same{{{no_steering_avg:.2f}}}"
-        avg_line = f"Average & {pos_avg} & {neg_avg} & {no_steering_avg} \\\ \n"
+        avg_line = (
+            f"Average & {pos_avg} & {neg_avg} & {no_steering_avg} "
+            + r"\\ "
+            + "\n"
+        )
         f_tex.write(avg_line)
 
 
@@ -467,7 +475,7 @@ def plot_layer_sweeps(
     # use % formatting for y axis
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
     plt.xlabel("Layer")
-    plt.ylabel("$\Delta$ p(answer matching behavior)")
+    plt.ylabel(r"$\Delta$ p(answer matching behavior)")
     if not title:
         plt.title(f"Per-layer CAA effect: {settings.get_formatted_model_name()}")
     else:

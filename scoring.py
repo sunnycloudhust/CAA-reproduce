@@ -40,7 +40,7 @@ def make_llama_request(system_prompt, user_prompt) -> str:
     return get_evaluator().generate_text(
         user_input=user_prompt,
         system_prompt=system_prompt,
-        max_new_tokens=5,
+        max_new_tokens=10,
     )
 
 
@@ -55,8 +55,8 @@ def parse_score(response: str) -> float:
     return score
 
 def make_prompts(question, answer, behavior):
-    system_prompt = "You are an evaluator for a language models' answers to questions. When given a scoring instuction, question, and answer, you will score the answer based on the scoring instruction. You only ever return a numerical score and no other text."
-    user_prompt = f"{SCORING_PROMPTS[behavior]}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}"
+    system_prompt = "You are an evaluator for a language model's answer. Return exactly one integer from 0 to 10 and no other text."
+    user_prompt = f"{SCORING_PROMPTS[behavior]}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}\n\nScore:"
     return system_prompt, user_prompt
 
 def scoring(behaviors=ALL_BEHAVIORS, custom_paths: dict[str, list[str]]=None, overwrite=False, do_printing=False):
@@ -112,4 +112,10 @@ def print_avg_score_util(file, score_key="score"):
     print(f"Average score for {os.path.basename(file)}: {scores / n}")
         
 if __name__ == "__main__":
-    scoring()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--do_printing", action="store_true")
+    args = parser.parse_args()
+    scoring(overwrite=args.overwrite, do_printing=args.do_printing)
