@@ -23,6 +23,12 @@ def set_plotting_settings():
 
 
 def add_vector_from_position(matrix, vector, position_ids, from_pos=None):
+    if position_ids.numel() != matrix.shape[-2]:
+        raise ValueError(
+            "position_ids must contain one position per sequence token"
+        )
+    position_ids = position_ids.reshape(matrix.shape[-2])
+
     from_id = from_pos
     if from_id is None:
         from_id = position_ids.min().item() - 1

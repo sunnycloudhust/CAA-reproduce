@@ -21,6 +21,13 @@ def test_add_vector_from_position():
     expected = t.tensor([[1, 2], [4, 5], [6, 7]], dtype=t.float32)
     assert t.allclose(result, expected)
 
+    batched_position_ids = t.tensor([[1, 2, 3]])
+    batched_matrix = t.tensor([[1, 2], [3, 4], [5, 6]], dtype=t.float32)
+    result = add_vector_from_position(
+        batched_matrix, vector, batched_position_ids, from_pos=2
+    )
+    assert t.allclose(result, expected)
+
 
 def test_find_last_subtensor_position():
     tensor = t.tensor([1, 2, 3, 4, 5, 1, 2, 3])

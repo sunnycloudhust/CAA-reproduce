@@ -12,7 +12,7 @@ cd "$SCRIPT_DIR"
 # python generate_vectors.py --layers 0 13 18 25 --model_size "7b" --use_base_model 
 
 
-# python normalize_vectors.py
+python normalize_vectors.py
 
 # Full form for plot_activations.py:
 #   python plot_activations.py --layers <layers> --use_base_model --model_size <7b> 
