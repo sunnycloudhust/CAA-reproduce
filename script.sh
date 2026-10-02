@@ -17,10 +17,10 @@ python normalize_vectors.py
 # Full form for plot_activations.py:
 #   python plot_activations.py --layers <layers> --use_base_model --model_size <7b> 
 #           --behaviors <behavior> ...
-python plot_activations.py --layers 0 13 18 25 --model_size "7b"
+# python plot_activations.py --layers 0 13 18 25 --model_size "7b"
 
 
-python analyze_vectors.py
+# python analyze_vectors.py
 
 # Full form for prompting_with_steering.py:
 #   python prompting_with_steering.py --layers <layers> --multipliers <number> ... 
