@@ -59,7 +59,9 @@ class BlockOutputWrapper(t.nn.Module):
 
     def forward(self, *args, **kwargs):
         output = self.block(*args, **kwargs)
-        self.activations = output[0]
+        output_is_tuple = isinstance(output, tuple)
+        hidden_states = output[0] if output_is_tuple else output
+        self.activations = hidden_states
         
         if self.calc_dot_product_with is not None:
             last_token_activations = self.activations[0, -1, :]
@@ -72,18 +74,23 @@ class BlockOutputWrapper(t.nn.Module):
             self.dot_products.append((top_token, dot_product.cpu().item()))
         if self.add_activations is not None:
             augmented_output = add_vector_from_position(
-                matrix=output[0],
+                matrix=hidden_states,
                 vector=self.add_activations,
                 position_ids=kwargs["position_ids"],
                 from_pos=self.from_position,
             )
-            output = (augmented_output,) + output[1:]
+            output = (
+                (augmented_output,) + output[1:]
+                if output_is_tuple
+                else augmented_output
+            )
 
         if not self.save_internal_decodings:
             return output
 
         # Whole block unembedded
-        self.block_output_unembedded = self.unembed_matrix(self.norm(output[0]))
+        output_hidden_states = output[0] if isinstance(output, tuple) else output
+        self.block_output_unembedded = self.unembed_matrix(self.norm(output_hidden_states))
 
         # Self-attention unembedded
         attn_output = self.block.self_attn.activations
