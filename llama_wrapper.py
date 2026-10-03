@@ -168,7 +168,14 @@ class LlamaWrapper:
             generated = self.model.generate(
                 inputs=tokens, max_new_tokens=max_new_tokens, top_k=1
             )
-            return self.tokenizer.batch_decode(generated)[0]
+            # `generate` returns the input prompt followed by new tokens.
+            # Return only the continuation so callers do not parse the prompt
+            # as part of the model response.
+            prompt_length = tokens.shape[-1]
+            continuation = generated[:, prompt_length:]
+            return self.tokenizer.batch_decode(
+                continuation, skip_special_tokens=True
+            )[0].strip()
 
     def generate_text(self, user_input: str, model_output: Optional[str] = None, system_prompt: Optional[str] = None, max_new_tokens: int = 50) -> str:
         if self.use_chat:
