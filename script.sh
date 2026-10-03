@@ -46,7 +46,7 @@ cd "$SCRIPT_DIR"
 
 # Full form for scoring.py:
 #   python scoring.py
-python scoring.py --overwrite
+python scoring.py 
 
 # Full form for plot_results.py:
 #   python plot_results.py --layers <layers> --multipliers <number> ... --title <text> --behaviors <behavior> ... --type <ab|open_ended|truthful_qa|mmlu> --override_vector <layer> --override_vector_model <model> --use_base_model --model_size <7b> --override_weights <path> <path>
