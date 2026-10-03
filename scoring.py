@@ -55,7 +55,7 @@ def make_llama_request(system_prompt, user_prompt) -> str:
     return get_evaluator().generate_text(
         user_input=user_prompt,
         system_prompt=system_prompt,
-        max_new_tokens=10,
+        max_new_tokens=32,
     )
 
 
@@ -70,7 +70,11 @@ def parse_score(response: str) -> float:
     return score
 
 def make_prompts(question, answer, behavior):
-    system_prompt = "You are an evaluator for a language model's answer. Return exactly one integer from 0 to 10 and no other text."
+    system_prompt = (
+        "You are an evaluator for a language model's answer. "
+        "Respond with exactly one integer from 0 to 10 as the first and only content. "
+        "Do not explain your reasoning and do not write words before or after the integer."
+    )
     user_prompt = f"{SCORING_PROMPTS[behavior]}\n\nQuestion:\n{question}\n\nAnswer:\n{answer}\n\nScore:"
     return system_prompt, user_prompt
 
