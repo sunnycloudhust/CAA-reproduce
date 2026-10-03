@@ -95,7 +95,7 @@ def plot_ab_results_for_layer(
         f"{settings.make_result_save_suffix(layer=layer)}.png",
     )
     plt.clf()
-    plt.figure(figsize=(3.5, 3.5))
+    figure, axis = plt.subplots(figsize=(8, 5))
     all_results = {}
     for system_prompt, label in system_prompt_options:
         settings.system_prompt = system_prompt
@@ -106,7 +106,7 @@ def plot_ab_results_for_layer(
                 avg_key_prob = get_avg_key_prob(results, "answer_matching_behavior")
                 res_list.append((multiplier, avg_key_prob))
             res_list.sort(key=lambda x: x[0])
-            plt.plot(
+            axis.plot(
                 [x[0] for x in res_list],
                 [x[1] for x in res_list],
                 label=label,
@@ -118,15 +118,15 @@ def plot_ab_results_for_layer(
             all_results[system_prompt] = res_list
         except:
             print(f"[WARN] Missing data for system_prompt={system_prompt} for layer={layer}")
-    plt.legend()
-    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
-    plt.xlabel("Multiplier")
-    plt.ylabel("p(answer matching behavior)")
-    plt.xticks(ticks=multipliers, labels=multipliers)
+    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
+    axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    axis.set_xlabel("Multiplier")
+    axis.set_ylabel("p(answer matching behavior)")
+    axis.set_xticks(multipliers)
     if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        plt.title(f"{HUMAN_NAMES[settings.behavior]} - {settings.get_formatted_model_name()}", fontsize=11)
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
+        axis.set_title(f"{HUMAN_NAMES[settings.behavior]} - {settings.get_formatted_model_name()}", fontsize=11)
+    figure.subplots_adjust(right=0.75, left=0.12, bottom=0.15, top=0.9)
+    figure.savefig(save_to, format="png", bbox_inches="tight")
     # Save data in all_results used for plotting as .txt
     with open(save_to.replace(".png", ".txt"), "w") as f, open(save_to.replace(".png", ".tex"), "w") as f_tex:
         for system_prompt, res_list in all_results.items():
@@ -148,7 +148,7 @@ def plot_finetuning_openended_comparison(settings: SteeringSettings, finetune_po
         f"finetune_comparison_{layer}_{settings.type}.png",
     )
     plt.clf()
-    plt.figure(figsize=(3.5, 3.5))
+    figure, axis = plt.subplots(figsize=(8, 5))
     model_paths = {
         "Positive finetuned": finetune_pos_path,
         "Negative finetuned": finetune_neg_path,
@@ -168,7 +168,7 @@ def plot_finetuning_openended_comparison(settings: SteeringSettings, finetune_po
                 raise ValueError(f"Unsupported eval type for finetuning comparison {settings.type}")
             res_list.append((multiplier, avg_score))
         res_list.sort(key=lambda x: x[0])
-        plt.plot(
+        axis.plot(
             [x[0] for x in res_list],
             [x[1] for x in res_list],
             label=model_name,
@@ -178,13 +178,13 @@ def plot_finetuning_openended_comparison(settings: SteeringSettings, finetune_po
             linewidth=3,
         )
         all_res[model_name] = res_list
-    plt.legend()
-    plt.xlabel("Multiplier")
-    plt.ylabel("Average behavioral eval score")
-    plt.xticks(ticks=multipliers, labels=multipliers)
-    plt.title(f"CAA + finetuning {HUMAN_NAMES[settings.behavior]}")
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
+    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
+    axis.set_xlabel("Multiplier")
+    axis.set_ylabel("Average behavioral eval score")
+    axis.set_xticks(multipliers)
+    axis.set_title(f"CAA + finetuning {HUMAN_NAMES[settings.behavior]}")
+    figure.subplots_adjust(right=0.75, left=0.12, bottom=0.15, top=0.9)
+    figure.savefig(save_to, format="png", bbox_inches="tight")
     with open(save_to.replace(".png", ".txt"), "w") as f, open(save_to.replace(".png", ".tex"), "w") as f_tex:
         for model_name, res_list in all_res.items():
             for multiplier, score in res_list:
@@ -217,28 +217,28 @@ def plot_tqa_mmlu_results_for_layer(
             avg_key_prob = get_avg_key_prob(category_results, "correct")
             res_per_category[category].append((multiplier, avg_key_prob))
 
-    plt.figure(figsize=(10, 5))
+    figure, axis = plt.subplots(figsize=(12, 5.5))
     for idx, (category, res_list) in enumerate(sorted(res_per_category.items(), key=lambda x: x[0])):
         x = [idx] * len(res_list)  # Assign a unique x-coordinate for each category
         y = [score for _, score in res_list]  # Extract y-coordinates from the results
         colors = cm.rainbow(np.linspace(0, 1, len(res_list)))  # Assign colors based on the rainbow spectrum
-        plt.scatter(x, y, color=colors, s=80)  # Plot the points with the assigned colors
+        axis.scatter(x, y, color=colors, s=80)  # Plot the points with the assigned colors
 
     # Add a legend for the colors with the correct rainbow spectrum cm.rainbow(np.linspace(0, 1, len(multipliers)))
     # Need to ensure dots colored with raindbow rather than default
     for idx, multiplier in enumerate(multipliers):
-        plt.scatter([], [], color=cm.rainbow(np.linspace(0, 1, len(multipliers)))[idx], label=f"Multiplier {multiplier}")
-    plt.legend(loc="upper left")
+        axis.scatter([], [], color=cm.rainbow(np.linspace(0, 1, len(multipliers)))[idx], label=f"Multiplier {multiplier}")
+    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
 
     # Final plot adjustments
-    plt.xticks(range(len(categories)), categories, rotation=45, ha="right")
-    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
-    plt.xlabel("Multiplier")
-    plt.ylabel("Probability of correct answer to A/B question")
+    axis.set_xticks(range(len(categories)), categories, rotation=45, ha="right")
+    axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    axis.set_xlabel("Multiplier")
+    axis.set_ylabel("Probability of correct answer to A/B question")
     if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        plt.title(f"Effect of {HUMAN_NAMES[settings.behavior]} CAA on {settings.get_formatted_model_name()} performance")
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
+        axis.set_title(f"Effect of {HUMAN_NAMES[settings.behavior]} CAA on {settings.get_formatted_model_name()} performance")
+    figure.subplots_adjust(right=0.78, left=0.1, bottom=0.2, top=0.9)
+    figure.savefig(save_to, format="png", bbox_inches="tight")
 
     def _format_for_latex_table(x, baseline):
         x_rounded_2dp = round(x, 2)
@@ -380,7 +380,7 @@ def plot_effect_on_behaviors(
     layer: int, multipliers: List[int], behaviors: List[str], settings: SteeringSettings, title: str = None   
 ):
     plt.clf()
-    plt.figure(figsize=(3, 3))
+    figure, axis = plt.subplots(figsize=(10, 5.5))
     save_to = os.path.join(
         ANALYSIS_PATH,
         f"{settings.make_result_save_suffix(layer=layer)}.png",
@@ -403,7 +403,7 @@ def plot_effect_on_behaviors(
         all_results.append(results)
 
     for idx, behavior in enumerate(behaviors):
-        plt.plot(
+        axis.plot(
             multipliers,
             all_results[idx],
             marker="o",
@@ -412,10 +412,10 @@ def plot_effect_on_behaviors(
             linewidth=3,
             label=HUMAN_NAMES[behavior],
         )
-    plt.xticks(ticks=multipliers, labels=multipliers)
+    axis.set_xticks(multipliers)
     if title is not None:
-        plt.title(title)
-    plt.xlabel("Steering vector multiplier")
+        axis.set_title(title)
+    axis.set_xlabel("Steering vector multiplier")
     ylabel = "p(answer matching behavior) (%)"
     if settings.type == "open_ended":
         ylabel = "Mean behavioral score (/10)"
@@ -423,11 +423,11 @@ def plot_effect_on_behaviors(
         ylabel = "p(correct answer to A/B question)"
     elif settings.type == "truthful_qa":
         ylabel = "p(correct answer to A/B question)"
-    plt.ylabel(ylabel)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
-    plt.savefig(save_to.replace("png", "svg"), format="svg")
+    axis.set_ylabel(ylabel)
+    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
+    figure.subplots_adjust(right=0.72, left=0.1, bottom=0.15, top=0.9)
+    figure.savefig(save_to, format="png", bbox_inches="tight")
+    figure.savefig(save_to.replace("png", "svg"), format="svg", bbox_inches="tight")
     with open(save_to.replace(".png", ".txt"), "w") as f:
         for mult in multipliers:
             f.write(f"{mult}\t")

@@ -76,22 +76,39 @@ def scoring(behaviors=ALL_BEHAVIORS, custom_paths: dict[str, list[str]]=None, ov
             new_save = os.path.join(copy_dir, os.path.basename(file))
             scores = 0
             if os.path.exists(new_save) and not overwrite:
-                print(f"Skipping {file} because it already exists")
-                continue
+                try:
+                    with open(new_save, "r") as f:
+                        existing_data = json.load(f)
+                    has_complete_scores = (
+                        isinstance(existing_data, list)
+                        and len(existing_data) > 0
+                        and all(
+                            isinstance(item, dict)
+                            and isinstance(item.get("score"), (int, float))
+                            and 0 <= item["score"] <= 10
+                            for item in existing_data
+                        )
+                    )
+                except (OSError, json.JSONDecodeError):
+                    has_complete_scores = False
+                if has_complete_scores:
+                    print(f"Skipping {file} because it already exists")
+                    continue
+                print(f"Rescoring {file} because {new_save} has missing or invalid scores")
             with open(file, "r") as f:
                 data = json.load(f)
+            print(f"Scoring {file}")
+            for d in tqdm(data):
+                system_prompt, user_prompt = make_prompts(d["question"], d["model_output"], behavior)
+                score = make_llama_request(system_prompt, user_prompt)
+                try:
+                    numeric_score = parse_score(score)
+                    d["score"] = numeric_score
+                    scores += numeric_score
+                except Exception:
+                    print(f"Error scoring. Prompt: {user_prompt}, Response: {score}")
+                    continue
             with open(os.path.join(copy_dir, os.path.basename(file)), "w") as f:
-                print(f"Scoring {file}")
-                for d in tqdm(data):
-                    system_prompt, user_prompt = make_prompts(d["question"], d["model_output"], behavior)
-                    score = make_llama_request(system_prompt, user_prompt)
-                    try:
-                        numeric_score = parse_score(score)
-                        d["score"] = numeric_score
-                        scores += numeric_score
-                    except Exception:
-                        print(f"Error scoring. Prompt: {user_prompt}, Response: {score}")
-                        continue
                 json.dump(data, f, indent=4)
             scores /= sum("score" in item for item in data) or 1
             if do_printing:
