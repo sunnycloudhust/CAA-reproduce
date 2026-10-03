@@ -35,8 +35,20 @@ def get_data(
     if len(filenames) == 0:
         print(f"[WARN] no filenames found for filter {settings}")
         return []
-    with open(filenames[0], "r") as f:
-        return json.load(f)
+    filename = filenames[0]
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+    except json.JSONDecodeError:
+        print(f"[WARN] invalid or empty JSON file: {filename}")
+        return []
+    except OSError as error:
+        print(f"[WARN] could not read result file {filename}: {error}")
+        return []
+    if not isinstance(data, list):
+        print(f"[WARN] expected a list of results in {filename}")
+        return []
+    return data
 
 
 def get_avg_score(results: Dict[str, Any]) -> float:
@@ -55,6 +67,9 @@ def get_avg_score(results: Dict[str, Any]) -> float:
 
 
 def get_avg_key_prob(results: Dict[str, Any], key: str) -> float:
+    if not results:
+        print(f"[WARN] No results available for key {key}")
+        return 0.0
     match_key_prob_sum = 0.0
     for result in results:
         matching_value = result[key]
@@ -319,7 +334,8 @@ def plot_ab_data_per_layer(
     layers: List[int], multipliers: List[float], settings: SteeringSettings
 ):
     plt.clf()
-    plt.figure(figsize=(10, 4))
+    layers = sorted(layers)
+    figure, axis = plt.subplots(figsize=(12, 5.5))
     all_results = []
     save_to = os.path.join(
         get_analysis_dir(settings.behavior),
@@ -336,21 +352,23 @@ def plot_ab_data_per_layer(
             sorted(layers),
             res,
             marker="o",
-            linestyle="dashed",
-            markersize=10,
-            linewidth=4,
-            label="Negative steering" if multiplier < 0 else "Positive steering",
+            linestyle="--" if multiplier < 0 else "-",
+            markersize=4.5,
+            markevery=max(1, len(layers) // 8),
+            linewidth=2.2,
+            label=f"Multiplier {multiplier:g}",
         )
-    # use % formatting for y axis
-    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    axis.grid(axis="y", color="#d9dee7", linewidth=0.8)
+    axis.set_axisbelow(True)
     if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        plt.title(f"{HUMAN_NAMES[settings.behavior]} CAA, {settings.get_formatted_model_name()}")
-    plt.xlabel("Layer")
-    plt.ylabel("Probability of answer matching behavior")
-    plt.xticks(ticks=sorted(layers), labels=sorted(layers))
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
+        axis.set_title(f"{HUMAN_NAMES[settings.behavior]} CAA, {settings.get_formatted_model_name()}")
+    axis.set_xlabel("Layer")
+    axis.set_ylabel("Probability of answer matching behavior")
+    axis.set_xticks(layers[:: max(1, len(layers) // 8)])
+    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
+    figure.subplots_adjust(right=0.76, left=0.1, bottom=0.15, top=0.9)
+    figure.savefig(save_to, format="png", dpi=300, bbox_inches="tight")
     with open(save_to.replace(".png", ".txt"), "w") as f:
         for layer in sorted(layers):
             f.write(f"{layer}\t")
@@ -421,7 +439,8 @@ def plot_layer_sweeps(
     layers: List[int], behaviors: List[str], settings: SteeringSettings, title: str = None
 ):
     plt.clf()
-    plt.figure(figsize=(5, 3))
+    layers = sorted(layers)
+    figure, axis = plt.subplots(figsize=(12.5, 6))
     all_results = []
     save_to = os.path.join(
         ANALYSIS_PATH,
@@ -433,57 +452,52 @@ def plot_layer_sweeps(
         settings.behavior = behavior
         pos_per_layer = []
         neg_per_layer = []
-        for layer in sorted(layers):
+        for layer in layers:
             base_res = get_avg_key_prob(get_data(layer, 0, settings), "answer_matching_behavior")
             pos_res = get_avg_key_prob(get_data(layer, 1, settings), "answer_matching_behavior") - base_res
             neg_res = get_avg_key_prob(get_data(layer, -1, settings), "answer_matching_behavior") - base_res
             pos_per_layer.append(pos_res)
             neg_per_layer.append(neg_res)
         all_results.append((pos_per_layer, neg_per_layer))
-        plt.plot(
-            sorted(layers),
+        color = plt.rcParams["axes.prop_cycle"].by_key()["color"][len(all_results) - 1]
+        axis.plot(
+            layers,
             pos_per_layer,
             linestyle="solid",
-            linewidth=2,
-            color="#377eb8",
+            linewidth=2.3,
+            marker="o",
+            markersize=4.5,
+            markevery=max(1, len(layers) // 8),
+            color=color,
+            label=f"{HUMAN_NAMES[behavior]} (+)",
         )
-        plt.plot(
-            sorted(layers),
+        axis.plot(
+            layers,
             neg_per_layer,
-            linestyle="solid",
-            linewidth=2,
-            color="#ff7f00",
+            linestyle="--",
+            linewidth=2.3,
+            marker="o",
+            markersize=4.5,
+            markevery=max(1, len(layers) // 8),
+            color=color,
+            alpha=0.72,
+            label=f"{HUMAN_NAMES[behavior]} (-)",
         )
-
-    plt.plot(
-        [],
-        [],
-        linestyle="solid",
-        linewidth=2,
-        color="#377eb8",
-        label="Positive steering",
-    )
-    plt.plot(
-        [],
-        [],
-        linestyle="solid",
-        linewidth=2,
-        color="#ff7f00",
-        label="Negative steering",
-    )
-
-    # use % formatting for y axis
-    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
-    plt.xlabel("Layer")
-    plt.ylabel(r"$\Delta$ p(answer matching behavior)")
+    axis.axhline(0, color="#6b7280", linewidth=1, alpha=0.8)
+    axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
+    axis.grid(axis="y", color="#d9dee7", linewidth=0.8)
+    axis.set_axisbelow(True)
+    axis.set_xlabel("Layer")
+    axis.set_ylabel(r"$\Delta$ p(answer matching behavior)")
     if not title:
-        plt.title(f"Per-layer CAA effect: {settings.get_formatted_model_name()}")
+        axis.set_title(f"Per-layer CAA effect: {settings.get_formatted_model_name()}")
     else:
-        plt.title(title)
-    plt.xticks(ticks=sorted(layers)[::5], labels=sorted(layers)[::5])
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(save_to, format="png")
+        axis.set_title(title)
+    axis.set_xticks(layers[:: max(1, len(layers) // 8)])
+    axis.legend(frameon=False, ncol=2, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0, columnspacing=1.2)
+    figure.subplots_adjust(right=0.72, left=0.1, bottom=0.15, top=0.9)
+    figure.savefig(save_to, format="png", dpi=300, bbox_inches="tight")
+    figure.savefig(save_to.replace(".png", ".svg"), format="svg", bbox_inches="tight")
 
 def steering_settings_from_args(args, behavior: str) -> SteeringSettings:
     steering_settings = SteeringSettings()
