@@ -28,11 +28,26 @@ SCORING_PROMPTS = {
 def get_evaluator() -> LlamaWrapper:
     global _evaluator
     if _evaluator is None:
-        _evaluator = LlamaWrapper(
-            hf_token=os.getenv("HF_TOKEN"),
-            size="7b",
-            use_chat=True,
-        )
+        hf_token = os.getenv("HF_TOKEN")
+        if not hf_token:
+            raise RuntimeError(
+                "HF_TOKEN is not set. Add a Hugging Face token with access to "
+                "meta-llama/Llama-2-7b-chat-hf before running scoring."
+            )
+        try:
+            _evaluator = LlamaWrapper(
+                hf_token=hf_token,
+                size="7b",
+                use_chat=True,
+            )
+        except OSError as error:
+            if "gated repo" in str(error).lower() or "401" in str(error):
+                raise RuntimeError(
+                    "Hugging Face denied access to meta-llama/Llama-2-7b-chat-hf. "
+                    "Accept the model license at https://huggingface.co/meta-llama/Llama-2-7b-chat-hf "
+                    "and use a token that has read access."
+                ) from error
+            raise
     return _evaluator
 
 
