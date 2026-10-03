@@ -20,7 +20,7 @@ DATASET_FILE = os.path.join("preprocessed_data", "generate_dataset.json")
 set_plotting_settings()
 
 def save_activation_projection_pca(behavior: str, layer: int, model_name_path: str):
-    title = f"{HUMAN_NAMES[behavior]}, layer {layer}"
+    title = f"PCA of contrastive activations - {HUMAN_NAMES[behavior]}, layer {layer}"
     fname = f"pca_{behavior}_layer_{layer}.png"
     save_dir = os.path.join(get_analysis_dir(behavior), "pca")
 

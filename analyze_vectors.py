@@ -42,7 +42,10 @@ def plot_per_layer_similarities(model_size: str, is_base: bool, behavior: str):
     # Set ticks for every 5th layer
     plt.xticks(range(len(layers)), layers)
     plt.yticks(range(len(layers)), layers)
-    plt.title(f"Layer similarity, {model_name}", fontsize=11)
+    plt.title(
+        f"Steering-vector cosine similarity by layer - {HUMAN_NAMES[behavior]}, {model_name}",
+        fontsize=11,
+    )
     plt.savefig(os.path.join(analysis_dir, f"cosine_similarities_{model_name.replace(' ', '_')}_{behavior}.svg"), format='svg')
     plt.close()
 
@@ -60,7 +63,7 @@ def plot_base_chat_similarities():
         plt.plot(base_caa_info["layers"], cos_sims, label=HUMAN_NAMES[behavior], linestyle="solid", linewidth=2)
     plt.xlabel("Layer")
     plt.ylabel("Cosine Similarity")
-    plt.title("Base vs. Chat model vector similarity", fontsize=12)
+    plt.title("Base vs. Chat steering-vector cosine similarity", fontsize=12)
     # legend in bottom right
     plt.legend(loc="lower right")
     plt.tight_layout()

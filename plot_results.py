@@ -123,8 +123,11 @@ def plot_ab_results_for_layer(
     axis.set_xlabel("Multiplier")
     axis.set_ylabel("p(answer matching behavior)")
     axis.set_xticks(multipliers)
-    if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        axis.set_title(f"{HUMAN_NAMES[settings.behavior]} - {settings.get_formatted_model_name()}", fontsize=11)
+    axis.set_title(
+        f"{HUMAN_NAMES[settings.behavior]} at layer {layer} - "
+        f"{settings.get_formatted_model_name()}",
+        fontsize=11,
+    )
     figure.subplots_adjust(right=0.75, left=0.12, bottom=0.15, top=0.9)
     figure.savefig(save_to, format="png", bbox_inches="tight")
     # Save data in all_results used for plotting as .txt
@@ -235,8 +238,10 @@ def plot_tqa_mmlu_results_for_layer(
     axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
     axis.set_xlabel("Multiplier")
     axis.set_ylabel("Probability of correct answer to A/B question")
-    if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        axis.set_title(f"Effect of {HUMAN_NAMES[settings.behavior]} CAA on {settings.get_formatted_model_name()} performance")
+    axis.set_title(
+        f"Effect of {HUMAN_NAMES[settings.behavior]} CAA on "
+        f"{settings.get_formatted_model_name()} performance at layer {layer}"
+    )
     figure.subplots_adjust(right=0.78, left=0.1, bottom=0.2, top=0.9)
     figure.savefig(save_to, format="png", bbox_inches="tight")
 
@@ -322,6 +327,7 @@ def plot_open_ended_results(
     )
     plt.xlabel("Multiplier")
     plt.ylabel("Average behavioral eval score")
+    plt.title(f"{HUMAN_NAMES[settings.behavior]} open-ended evaluation at layer {layer}")
     plt.tight_layout()
     plt.savefig(save_to, format="png")
     # Save data in res_list used for plotting as .txt
@@ -361,11 +367,10 @@ def plot_ab_data_per_layer(
     axis.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.0%}"))
     axis.grid(axis="y", color="#d9dee7", linewidth=0.8)
     axis.set_axisbelow(True)
-    if (settings.override_vector is None) and (settings.override_vector_model is None) and (settings.override_model_weights_path is None):
-        axis.set_title(f"{HUMAN_NAMES[settings.behavior]} CAA, {settings.get_formatted_model_name()}")
     axis.set_xlabel("Layer")
     axis.set_ylabel("Probability of answer matching behavior")
     axis.set_xticks(layers[:: max(1, len(layers) // 8)])
+    axis.set_title(f"{HUMAN_NAMES[settings.behavior]} by layer - {settings.get_formatted_model_name()}")
     axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
     figure.subplots_adjust(right=0.76, left=0.1, bottom=0.15, top=0.9)
     figure.savefig(save_to, format="png", dpi=300, bbox_inches="tight")
@@ -380,7 +385,7 @@ def plot_effect_on_behaviors(
     layer: int, multipliers: List[int], behaviors: List[str], settings: SteeringSettings, title: str = None   
 ):
     plt.clf()
-    figure, axis = plt.subplots(figsize=(10, 5.5))
+    figure, axis = plt.subplots(figsize=(12, 6))
     save_to = os.path.join(
         ANALYSIS_PATH,
         f"{settings.make_result_save_suffix(layer=layer)}.png",
@@ -415,6 +420,8 @@ def plot_effect_on_behaviors(
     axis.set_xticks(multipliers)
     if title is not None:
         axis.set_title(title)
+    else:
+        axis.set_title(f"Behavioral effects at layer {layer} - {settings.get_formatted_model_name()}")
     axis.set_xlabel("Steering vector multiplier")
     ylabel = "p(answer matching behavior) (%)"
     if settings.type == "open_ended":
@@ -424,8 +431,16 @@ def plot_effect_on_behaviors(
     elif settings.type == "truthful_qa":
         ylabel = "p(correct answer to A/B question)"
     axis.set_ylabel(ylabel)
-    axis.legend(frameon=False, loc="center left", bbox_to_anchor=(1.02, 0.5), borderaxespad=0)
-    figure.subplots_adjust(right=0.72, left=0.1, bottom=0.15, top=0.9)
+    handles, labels = axis.get_legend_handles_labels()
+    figure.legend(
+        handles,
+        labels,
+        frameon=False,
+        loc="center left",
+        bbox_to_anchor=(0.72, 0.5),
+        borderaxespad=0,
+    )
+    figure.subplots_adjust(right=0.68, left=0.1, bottom=0.15, top=0.9)
     figure.savefig(save_to, format="png", bbox_inches="tight")
     figure.savefig(save_to.replace("png", "svg"), format="svg", bbox_inches="tight")
     with open(save_to.replace(".png", ".txt"), "w") as f:
