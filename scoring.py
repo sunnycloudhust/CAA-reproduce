@@ -55,16 +55,33 @@ def make_llama_request(system_prompt, user_prompt) -> str:
     return get_evaluator().generate_text(
         user_input=user_prompt,
         system_prompt=system_prompt,
-        max_new_tokens=32,
+        # The evaluator occasionally ignores the one-token response format and
+        # explains its rating before emitting the score.
+        max_new_tokens=64,
     )
 
 
 def parse_score(response: str) -> float:
     score_text = response.rsplit("[/INST]", 1)[-1]
-    matches = re.findall(r"(?<!\d)(?:10|[0-9])(?:\.\d+)?(?!\d)", score_text)
-    if not matches:
-        raise ValueError(f"No numeric score found in evaluator response: {response}")
-    score = float(matches[0])
+    # Prefer a number explicitly associated with the score label. This avoids
+    # accidentally treating numbers in an evaluator explanation as the rating.
+    labeled_match = re.search(
+        r"\bscore\b\s*[:\-]?\s*((?:10|[0-9])(?:\.\d+)?)\b",
+        score_text,
+        flags=re.IGNORECASE,
+    )
+    if labeled_match:
+        score = float(labeled_match.group(1))
+    else:
+        # The requested format is a single integer, so accept that format even
+        # when the model omits the "Score:" label.
+        first_line = score_text.strip().splitlines()[0] if score_text.strip() else ""
+        exact_match = re.fullmatch(r"((?:10|[0-9])(?:\.\d+)?)", first_line)
+        if not exact_match:
+            raise ValueError(
+                f"Evaluator response did not contain a labeled score: {response}"
+            )
+        score = float(exact_match.group(1))
     if not 0 <= score <= 10:
         raise ValueError(f"Score outside 0-10 range: {score}")
     return score
@@ -124,7 +141,7 @@ def scoring(behaviors=ALL_BEHAVIORS, custom_paths: dict[str, list[str]]=None, ov
                     numeric_score = parse_score(score)
                     d["score"] = numeric_score
                     scores += numeric_score
-                except Exception:
+                except ValueError:
                     print(f"Error scoring. Prompt: {user_prompt}, Response: {score}")
                     continue
             with open(os.path.join(copy_dir, os.path.basename(file)), "w") as f:
