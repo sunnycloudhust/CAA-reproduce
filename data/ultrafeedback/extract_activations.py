@@ -38,6 +38,12 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--model', type = str, default = 'Llama3.1-8B-Base')
     parser.add_argument('-l', '--layer_idx', type = int, default = -1)
     parser.add_argument('-b', '--batch_size', type = int, default = 10)
+    parser.add_argument(
+        '--dtype',
+        choices = ['float32', 'float16', 'bfloat16'],
+        default = 'float16',
+        help = 'Model precision. Use float16 or bfloat16 to reduce GPU memory usage.',
+    )
     args = parser.parse_args()
 
     data_dir = get_project_dir() / 'data' / 'ultrafeedback'
@@ -45,7 +51,12 @@ if __name__ == '__main__':
     activations_dir = data_dir / 'activations' / args.model
     activations_dir.mkdir(parents = True, exist_ok = True)
 
-    model = HuggingFaceLM(args.model, device = "auto", dtype = torch.float32)
+    dtype = {
+        'float32': torch.float32,
+        'float16': torch.float16,
+        'bfloat16': torch.bfloat16,
+    }[args.dtype]
+    model = HuggingFaceLM(args.model, device = "auto", dtype = dtype)
     layer_idx = model.steer_layer_idx if args.layer_idx == -1 else args.layer_idx
 
     if 'Base' in args.model and 'Qwen' not in args.model:

@@ -1,3 +1,5 @@
+# Load and format the dataset into train/test
+
 import pandas as pd
 from datasets import load_dataset
 
@@ -9,8 +11,11 @@ gen_dir.mkdir(parents = True, exist_ok = True)
 
 def format_truthfulqa_generation():
     ds = load_dataset("truthfulqa/truthful_qa", "generation", split = "validation")
+    # truthfulqa has generation/MCQ configuration
+    
     ds = ds.train_test_split(test_size = 0.5, seed = 42)
     df1, df2 = ds['train'].to_pandas(), ds['test'].to_pandas()
+    
     for df_idx, df in enumerate([df1, df2]):
         pos_pairs, neg_pairs = [], []
         for idx, row in df.iterrows():
