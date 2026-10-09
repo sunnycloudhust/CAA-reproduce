@@ -77,7 +77,18 @@ These scripts will:
 - Download and format the each dataset
 - Extract activations from the specified model at the specified layer
 
-**Note**: For toxicity data preparation, you need Kaggle API credentials configured (`~/.kaggle/kaggle.json`).
+**Note**: For toxicity data preparation, you need Kaggle API credentials configured before running
+`data/toxicity.sh`. In Google Colab, upload your Kaggle API token and run:
+
+```bash
+mkdir -p ~/.kaggle
+cp /content/kaggle.json ~/.kaggle/kaggle.json
+chmod 600 ~/.kaggle/kaggle.json
+```
+
+For a local machine, place `kaggle.json` at `~/.kaggle/kaggle.json` and run
+`chmod 600 ~/.kaggle/kaggle.json`. You must also accept the competition rules on the
+[Jigsaw Unintended Bias in Toxicity Classification](https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification) page.
 
 ## Running Experiments
 

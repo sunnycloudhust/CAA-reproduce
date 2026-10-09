@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # training data 
 kaggle competitions download -c jigsaw-unintended-bias-in-toxicity-classification
