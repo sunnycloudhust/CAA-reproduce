@@ -1,0 +1,314 @@
+[
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyArc",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      5
+    ],
+    "scores_by_k": {
+      "5": 0.6657010679508601
+    },
+    "mean_over_k": 0.6657010679508601,
+    "num_k_values": 1
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyArc",
+    "metric": "sample_len",
+    "k_values_completed": [
+      5
+    ],
+    "scores_by_k": {
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 1
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyHellaswag",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      5
+    ],
+    "scores_by_k": {
+      "5": 0.8167087640253947
+    },
+    "mean_over_k": 0.8167087640253947,
+    "num_k_values": 1
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyHellaswag",
+    "metric": "sample_len",
+    "k_values_completed": [
+      5
+    ],
+    "scores_by_k": {
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 1
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyMMLU",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.7206229368021011,
+      "5": 0.7206229368021011
+    },
+    "mean_over_k": 0.7206229368021011,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyMMLU",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyTruthfulQA",
+    "metric": "acc,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.5731051737907384,
+      "5": 0.572884201990876
+    },
+    "mean_over_k": 0.5729946878908072,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyTruthfulQA",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyWinogrande",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.7528867232344861,
+      "5": 0.7528867232344861
+    },
+    "mean_over_k": 0.7528867232344861,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_aa",
+    "task": "tinyWinogrande",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyArc",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.6761179136635118,
+      "5": 0.6761179136635118
+    },
+    "mean_over_k": 0.6761179136635118,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyArc",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyHellaswag",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.8127258869066349,
+      "5": 0.8127258869066349
+    },
+    "mean_over_k": 0.8127258869066349,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyHellaswag",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyMMLU",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.7300272542477888,
+      "5": 0.7300272542477888
+    },
+    "mean_over_k": 0.7300272542477888,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyMMLU",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyTruthfulQA",
+    "metric": "acc,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.5337725165849034,
+      "5": 0.5337804062636788
+    },
+    "mean_over_k": 0.5337764614242911,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyTruthfulQA",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyWinogrande",
+    "metric": "acc_norm,none",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 0.7739860037114807,
+      "5": 0.7685456772657756
+    },
+    "mean_over_k": 0.7712658404886281,
+    "num_k_values": 2
+  },
+  {
+    "model": "google/gemma-2-9b-it",
+    "method": "chars_pct_aa",
+    "task": "tinyWinogrande",
+    "metric": "sample_len",
+    "k_values_completed": [
+      1,
+      5
+    ],
+    "scores_by_k": {
+      "1": 100.0,
+      "5": 100.0
+    },
+    "mean_over_k": 100.0,
+    "num_k_values": 2
+  }
+]
