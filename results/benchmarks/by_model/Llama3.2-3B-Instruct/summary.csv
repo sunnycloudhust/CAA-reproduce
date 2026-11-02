@@ -1,5 +1,0 @@
-﻿Model,Method,ASR (%),tinyArc (%),tinyHellaswag (%),tinyMMLU (%),tinyTruthfulQA (%),tinyWinogrande (%),Avg (%),ASR PC,ASR K,ASR Layer,ASR Alpha,TinyBench PC,TinyBench K,TinyBench Layer,TinyBench Alpha
-Llama3.2-3B-Instruct,No Steering,,56.16,76.69,63.68,50.32,61.56,61.68,,,,,,,,
-Llama3.2-3B-Instruct,ActAdd,91.35,31.60,42.67,,46.23,62.17,,,1,28,3,n/a,1,28,3
-Llama3.2-3B-Instruct,CHaRS AA,92.31,31.60,41.12,,46.10,62.17,,,5,28,3,,5,28,3
-Llama3.2-3B-Instruct,CHaRS-PCT AA,90.38,31.60,42.67,,46.19,62.17,,5,5,28,3,5,5,28,3

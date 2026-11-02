@@ -1,5 +1,0 @@
-﻿Model,Method,ASR (%),tinyArc (%),tinyHellaswag (%),tinyMMLU (%),tinyTruthfulQA (%),tinyWinogrande (%),Avg (%),ASR PC,ASR K,ASR Layer,ASR Alpha,TinyBench PC,TinyBench K,TinyBench Layer,TinyBench Alpha
-Qwen2.5-7B-Instruct,No Steering,,67.29,75.56,73.21,56.01,74.26,69.27,,,,,,,,
-Qwen2.5-7B-Instruct,ActAdd,92.31,55.73,73.38,63.19,51.64,59.65,60.72,,1,35,3,n/a,1,35,3
-Qwen2.5-7B-Instruct,CHaRS AA,97.12,51.37,73.12,58.93,54.24,57.88,59.11,,5,35,3.5,,5,35,3.5
-Qwen2.5-7B-Instruct,CHaRS-PCT AA,97.12,51.37,73.12,58.93,54.33,57.88,59.13,3,5,35,3.5,1,5,35,3.5

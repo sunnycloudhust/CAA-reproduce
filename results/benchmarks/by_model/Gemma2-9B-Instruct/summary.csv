@@ -1,5 +1,0 @@
-﻿Model,Method,ASR (%),tinyArc (%),tinyHellaswag (%),tinyMMLU (%),tinyTruthfulQA (%),tinyWinogrande (%),Avg (%),ASR PC,ASR K,ASR Layer,ASR Alpha,TinyBench PC,TinyBench K,TinyBench Layer,TinyBench Alpha
-Gemma2-9B-Instruct,No Steering,,69.31,80.81,76.57,54.77,76.86,71.66,,,,,,,,
-Gemma2-9B-Instruct,ActAdd,1.92,66.57,81.67,72.06,57.31,75.29,70.58,,1,r_44,1,n/a,1,44,1
-Gemma2-9B-Instruct,CHaRS AA,1.92,66.57,81.67,72.06,57.29,75.29,70.58,,5,r_44,1,,5,44,1
-Gemma2-9B-Instruct,CHaRS-PCT AA,1.92,67.61,81.27,73.00,53.38,76.85,70.42,5,5,r_44,1,5,5,44,1
